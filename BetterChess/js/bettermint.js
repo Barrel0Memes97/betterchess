@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (
                 resolve(value);
             });
     }
-    return new(P || (P = Promise))(function (resolve, reject) {
+    return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
                 step(generator.next(value));
@@ -98,22 +98,22 @@ class GameController {
                     .controller
                     .getOptions();
                 if (event.data.flipped != undefined && this.evalBar != null) {
-                    if (event.data.flipped) 
+                    if (event.data.flipped)
                         this
                             .evalBar
                             .classList
                             .add("evaluation-bar-flipped");
-                    else 
+                    else
                         this
                             .evalBar
                             .classList
                             .remove("evaluation-bar-flipped");
-                    }
-                });
+                }
+            });
     }
     UpdateExtensionOptions() {
         let options = this.master.options;
-        if (options.evaluation_bar && this.evalBar == null) 
+        if (options.evaluation_bar && this.evalBar == null)
             this.CreateAnalysisTools();
         else if (!options.evaluation_bar && this.evalBar != null) {
             this
@@ -121,7 +121,7 @@ class GameController {
                 .remove();
             this.evalBar = null;
         }
-        if (options.depth_bar && this.depthBar == null) 
+        if (options.depth_bar && this.depthBar == null)
             this.CreateAnalysisTools();
         else if (!options.depth_bar && this.depthBar != null) {
             this
@@ -150,10 +150,10 @@ class GameController {
         // been added to chessboard layout (#board-layout-main)
         let interval1 = setInterval(() => {
             let layoutChessboard = this.chessboard.parentElement;
-            if (layoutChessboard == null) 
+            if (layoutChessboard == null)
                 return;
             let layoutMain = layoutChessboard.parentElement;
-            if (layoutMain == null) 
+            if (layoutMain == null)
                 return;
             clearInterval(interval1);
             if (this.master.options.depth_bar && this.depthBar == null) {
@@ -201,13 +201,13 @@ class GameController {
                 this.evalScoreAbbreviated = layoutEvaluation.querySelector(
                     ".evaluation-bar-scoreAbbreviated"
                 );
-                if (!this.options.isWhiteOnBottom && this.options.flipped) 
+                if (!this.options.isWhiteOnBottom && this.options.flipped)
                     this
                         .evalBar
                         .classList
                         .add("evaluation-bar-flipped");
-                }
-            }, 10);
+            }
+        }, 10);
     }
     UpdateEngine(isNewGame) {
         // console.log("UpdateEngine", isNewGame);
@@ -229,9 +229,9 @@ class GameController {
             .currentMarkings
             .forEach((marking) => {
                 let key = marking.type + "|";
-                if (marking.data.square != null) 
+                if (marking.data.square != null)
                     key += marking.data.square;
-                else 
+                else
                     key += `${marking.data.from}${marking.data.to}`;
                 this
                     .controller
@@ -248,7 +248,7 @@ class GameController {
             topMoves.forEach((move, idx) => {
                 // isBestMove means final evaluation, don't include the moves that has less
                 // depth than the best move
-                if (isBestMove && move.depth != bestMove.depth) 
+                if (isBestMove && move.depth != bestMove.depth)
                     return;
                 let color = (idx == 0)
                     ? this.options.arrowColors.alt
@@ -301,7 +301,7 @@ class GameController {
                     ? bestMove.depth
                     : bestMove.depth - 1
             )
-            / this.master.engine.depth * 100;
+                / this.master.engine.depth * 100;
             this.SetCurrentDepth(depthPercent);
         }
         if (options.evaluation_bar) {
@@ -333,11 +333,11 @@ class GameController {
         if (!isMate) {
             let eval_max = 500;
             let eval_min = -500;
-            let smallScore = score /100;
+            let smallScore = score / 100;
             percent = 90 - (((score - eval_min) / (eval_max - eval_min)) * (95 - 5)) + 5;
-            if (percent < 5) 
+            if (percent < 5)
                 percent = 5;
-            else if (percent > 95) 
+            else if (percent > 95)
                 percent = 95;
             textScore = (
                 score >= 0
@@ -433,7 +433,7 @@ class StockfishEngine {
             this.UpdateOptions();
             this.send("ucinewgame");
         });
-        
+
     }
     send(cmd) {
         this.stockfish.postMessage(cmd);
@@ -520,96 +520,61 @@ class StockfishEngine {
         else {
             let match = line.match(/^info .*\bdepth (\d+) .*\bseldepth (\d+) .*\bmultipv (\d+) .*\bscore (\w+) (-?\d+) .*\bpv (.+)/);
             if (match) {
-              if (!this.isRequestedStop) {
-                let cp = (match[4] == "cp") ? parseInt(match[5]) : null;
-                let mate = (match[4] == "cp") ? null : parseInt(match[5]);
-                let move = new TopMove(match[6], parseInt(match[1]), cp, mate);
-                if (parseInt(match[3]) <= this.master.options.multipv) { // check multipv against master options
-                  this.onTopMoves(move, false);
+                if (!this.isRequestedStop) {
+                    let cp = (match[4] == "cp") ? parseInt(match[5]) : null;
+                    let mate = (match[4] == "cp") ? null : parseInt(match[5]);
+                    let move = new TopMove(match[6], parseInt(match[1]), cp, mate);
+                    if (parseInt(match[3]) <= this.master.options.multipv) { // check multipv against master options
+                        this.onTopMoves(move, false);
+                    }
                 }
-              }
             }
             else if (match = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)?/)) {
                 this.isEvaluating = false;
                 if (this.goDoneCallbacks.length > 0) {
-                  let copy = this.goDoneCallbacks;
-                  this.goDoneCallbacks = [];
-                  copy.forEach(function (callback) { callback(); });
+                    let copy = this.goDoneCallbacks;
+                    this.goDoneCallbacks = [];
+                    copy.forEach(function (callback) { callback(); });
                 }
                 if (!this.isRequestedStop && match[1] !== undefined) {
-                  const index = this.topMoves.findIndex(object => object.move === match[1]);
-                  if (index < 0) {
-                    console.assert(false, `The engine returned the best move "${match[1]}" but it's not in the top move list: `, this.topMoves);
-                    debugger;
-                  } else {
-                    openMoveSelectionPopup(this.topMoves);
-                  }
+                    const index = this.topMoves.findIndex(object => object.move === match[1]);
+                    if (index < 0) {
+                        console.assert(false, `The engine returned the best move "${match[1]}" but it's not in the top move list: `, this.topMoves);
+                        alert(`The engine returned the best move "${match[1]}" but it's not in the top move list: `);
+                    }
                 }
                 this.isRequestedStop = false;
-              }
-              
-              function openMoveSelectionPopup(topMoves) {
-                const popup = window.open('C:/Users/comma/Downloads/BetterMint/html/move_selection.html', '_blank', 'width=400,height=300');
-              
-                popup.addEventListener('load', () => {
-                  const moveButtons = document.createElement('div');
-              
-                  topMoves.forEach((moveObj) => {
-                    const button = document.createElement('button');
-                    button.textContent = moveObj.move;
-                    button.addEventListener('click', () => {
-                      handleMoveSelection(moveObj.move);
-                    });
-                    moveButtons.appendChild(button);
-                  });
-              
-                  popup.document.body.appendChild(moveButtons);
-                });
-              }
-              
-              function handleMoveSelection(move) {
-                const index = topMoves.findIndex(object => object.move === move);
-                if (index < 0) {
-                  console.assert(false, `The engine returned the best move "${move}" but it's not in the top move list: `, topMoves);
-                }
-                // Perform the desired action with the selected move
-                // ...
-                popup.close(); // Close the popup window after move selection
-              }
-              
-              function MoveAndGo(FENs = null, isNewGame = true) {
-                // let it go, let it gooo
-                let go = () => {
-                  this.lastTopMoves = isNewGame ? [] : this.topMoves;
-                  this.lastMoveScore = null;
-                  this.topMoves = [];
-                  if (isNewGame) {
-                    this.isInTheory = ecoTable != null;
-                  }
-                  if (this.isInTheory) {
-                    let shortFen = this.master.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
-                    if (ecoTable.get(shortFen) !== true) {
-                      this.isInTheory = false;
-                    }
-                  }
-                  if (FENs != null) {
-                    this.send(`position fen ${FENs}`);
-                  }
-                  this.go();
-                };
-              
-                this.onReady(() => {
-                  if (isNewGame) {
-                    this.send("ucinewgame");
-                    this.onReady(go);
-                  } else {
-                    go();
-                  }
-                });
-            } 
-        }                   
+            }
+        }
     }
-
+    MoveAndGo(FENs = null, isNewGame = true) {
+        // let it go, let it gooo
+        let go = () => {
+            this.lastTopMoves = isNewGame ? [] : this.topMoves;
+            this.lastMoveScore = null;
+            this.topMoves = [];
+            if (isNewGame)
+                this.isInTheory = ecoTable != null;
+            ;
+            if (this.isInTheory) {
+                let shortFen = this.master.game.controller.getFEN().split(" ").slice(0, 3).join(" ");
+                if (ecoTable.get(shortFen) !== true)
+                    this.isInTheory = false;
+            }
+            if (FENs != null)
+                this.send(`position fen ${FENs}`);
+            this.go();
+        };
+        this.onReady(() => {
+            if (isNewGame) {
+                this.send("ucinewgame");
+                this.onReady(go);
+            }
+            else {
+                go();
+            }
+        });
+    }
     AnalyzeLastMove() {
         this.lastMoveScore = null;
         let lastMove = this.master.game.controller.getLastMove();
@@ -664,7 +629,7 @@ class StockfishEngine {
                     console.assert(false, "Error while analyzing last move");
                 }
             }
-        } 
+        }
         // add highlight and effect
         if (this.lastMoveScore != null) {
             const highlightColors = {
@@ -709,70 +674,70 @@ class StockfishEngine {
         let top_pv_moves;
         let bestMoveSelected = false;
         if (move != null) {
-          const index = this.topMoves.findIndex(object => object.move === move.move);
-          if (isBestMove) {
-            bestMoveSelected = true; // a best move has been selected
-          } else {
-            if (index === -1) {
-              move.skillLevel = this.options["Skill Level"]; // set skill level option
-              move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
-              move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
-              move.OwnBook = this.options["OwnBook"];
-              if (move.OwnBook) {
-                // If OwnBook is true, only use book moves
-                this.topMoves = [move];
-              } else {
-                // If OwnBook is false, add the move to the top moves list
-                this.topMoves.push(move);
-                this.SortTopMoves();
-              }
-            } else if (move.depth >= this.topMoves[index].depth) {
-              // only replace if this move has a higher depth than
-              // the one in the current top move list
-              move.skillLevel = this.options["Skill Level"]; // set skill level option
-              move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
-              move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
-              move.OwnBook = this.options["OwnBook"];
-              if (move.OwnBook) {
-                // If OwnBook is true, only use book moves
-                this.topMoves = [move];
-              } else {
-                // If OwnBook is false, replace the move in the top moves list
-                this.topMoves[index] = move;
-                this.SortTopMoves();
-              }
-            }
-          }
-        }      
-      
-        if (this.master.options.highmatechance) {
-          // If highmatechance is enabled, prioritize moves that get closer to mate
-          const sortedMoves = this.topMoves.sort((a, b) => {
-            if (a.mateIn !== null && b.mateIn === null) {
-              return -1;
-            } else if (a.mateIn === null && b.mateIn !== null) {
-              return 1;
-            } else if (a.mateIn !== null && b.mateIn !== null) {
-              if (a.mateIn <= this.master.options.matefindervalue && b.mateIn <= this.master.options.matefindervalue) {
-                return a.mateIn - b.mateIn;
-              } else {
-                return 0;
-              }
+            const index = this.topMoves.findIndex(object => object.move === move.move);
+            if (isBestMove) {
+                bestMoveSelected = true; // a best move has been selected
             } else {
-              return 0;
+                if (index === -1) {
+                    move.skillLevel = this.options["Skill Level"]; // set skill level option
+                    move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
+                    move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
+                    move.OwnBook = this.options["OwnBook"];
+                    if (move.OwnBook) {
+                        // If OwnBook is true, only use book moves
+                        this.topMoves = [move];
+                    } else {
+                        // If OwnBook is false, add the move to the top moves list
+                        this.topMoves.push(move);
+                        this.SortTopMoves();
+                    }
+                } else if (move.depth >= this.topMoves[index].depth) {
+                    // only replace if this move has a higher depth than
+                    // the one in the current top move list
+                    move.skillLevel = this.options["Skill Level"]; // set skill level option
+                    move.UCI_Elo = this.options["UCI_Elo"]; // set UCI Elo option
+                    move.UCI_LimitStrength = this.options["UCI_LimitStrength"]; // set UCI LimitStrength option
+                    move.OwnBook = this.options["OwnBook"];
+                    if (move.OwnBook) {
+                        // If OwnBook is true, only use book moves
+                        this.topMoves = [move];
+                    } else {
+                        // If OwnBook is false, replace the move in the top moves list
+                        this.topMoves[index] = move;
+                        this.SortTopMoves();
+                    }
+                }
             }
-          });
-      
-          top_pv_moves = sortedMoves.slice(0, this.options["MultiPV"]);
-      
-          // Play the move that gets to mate the fastest
-          const mateMoves = top_pv_moves.filter(move => move.mateIn !== null);
-          if (mateMoves.length > 0) {
-            const fastestMateMove = mateMoves.reduce((a, b) => a.mateIn < b.mateIn ? a : b);
-            top_pv_moves = [fastestMateMove];
-          }
         }
-    
+
+        if (this.master.options.highmatechance) {
+            // If highmatechance is enabled, prioritize moves that get closer to mate
+            const sortedMoves = this.topMoves.sort((a, b) => {
+                if (a.mateIn !== null && b.mateIn === null) {
+                    return -1;
+                } else if (a.mateIn === null && b.mateIn !== null) {
+                    return 1;
+                } else if (a.mateIn !== null && b.mateIn !== null) {
+                    if (a.mateIn <= this.master.options.matefindervalue && b.mateIn <= this.master.options.matefindervalue) {
+                        return a.mateIn - b.mateIn;
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    return 0;
+                }
+            });
+
+            top_pv_moves = sortedMoves.slice(0, this.options["MultiPV"]);
+
+            // Play the move that gets to mate the fastest
+            const mateMoves = top_pv_moves.filter(move => move.mateIn !== null);
+            if (mateMoves.length > 0) {
+                const fastestMateMove = mateMoves.reduce((a, b) => a.mateIn < b.mateIn ? a : b);
+                top_pv_moves = [fastestMateMove];
+            }
+        }
+
         if (!bestMoveSelected && this.master.options.text_to_speech) {
             // pick a random top move up to 5 below the selected depth
             let maxDepth = Math.max(...this.topMoves.map(move => move.depth));
@@ -791,19 +756,19 @@ class StockfishEngine {
             msg.rate = 1;
             window.speechSynthesis.cancel(); // stop any previous text-to-speech
             window.speechSynthesis.speak(msg);
-        } 
-      
+        }
+
         if (!bestMoveSelected) { // continue loading depths if a best move hasn't been selected
-          if (this.master.options.legit_auto_move) {
-            // Select a random depth to consider
-            let random_depth;
-            if (this.maxDepthLoaded) {
-              random_depth = this.maxDepth;
-            } else {
-              random_depth = Math.floor(Math.random() * this.master.options.max_legit_auto_move_depth) + 1;
-              this.maxDepthLoaded = true;
-              this.maxDepth = random_depth;
-            }      
+            if (this.master.options.legit_auto_move) {
+                // Select a random depth to consider
+                let random_depth;
+                if (this.maxDepthLoaded) {
+                    random_depth = this.maxDepth;
+                } else {
+                    random_depth = Math.floor(Math.random() * this.master.options.max_legit_auto_move_depth) + 1;
+                    this.maxDepthLoaded = true;
+                    this.maxDepth = random_depth;
+                }
                 top_pv_moves = this.topMoves.filter(move => move.depth <= random_depth).slice(0, this.options["MultiPV"]);
             } else {
                 top_pv_moves = this.topMoves.slice(0, this.options["MultiPV"]);
@@ -826,34 +791,34 @@ class StockfishEngine {
             let legalMoves = this.master.game.controller.getLegalMoves();
             const index = legalMoves.findIndex(move => move.from === bestMove.from && move.to == bestMove.to);
             console.assert(index !== -1, "Illegal best move");
-    
+
             let moveData = legalMoves[index];
             moveData.userGenerated = true;
             if (bestMove.promotion != null)
                 moveData.promotion = bestMove.promotion;
-    
-    
-                let auto_move_time = this.master.options.auto_move_time + Math.floor(Math.random() * this.master.options.auto_move_time_random) % this.master.options.auto_move_time_random_div * this.master.options.auto_move_time_random_multi;
 
-                if (isNaN(auto_move_time) || auto_move_time == null || auto_move_time == undefined) {
-                    auto_move_time = 100;
-                }
-                
-                const secondsTillAutoMove = (auto_move_time / 1000).toFixed(1);
-                if (window.toaster) {
-                    window.toaster.add({
-                        id: "chess.com",
-                        duration: (parseFloat(secondsTillAutoMove) + 1) * 1000,
-                        icon: "circle-info",
-                        content: `BetterMint: Auto move in ${secondsTillAutoMove} seconds!`,
-                    });
-                }                                           
-            
-                setTimeout(() => {
-                    this.master.game.controller.move(moveData);
-                }, auto_move_time);
+
+            let auto_move_time = this.master.options.auto_move_time + Math.floor(Math.random() * this.master.options.auto_move_time_random) % this.master.options.auto_move_time_random_div * this.master.options.auto_move_time_random_multi;
+
+            if (isNaN(auto_move_time) || auto_move_time == null || auto_move_time == undefined) {
+                auto_move_time = 100;
             }
+
+            const secondsTillAutoMove = (auto_move_time / 1000).toFixed(1);
+            if (window.toaster) {
+                window.toaster.add({
+                    id: "chess.com",
+                    duration: (parseFloat(secondsTillAutoMove) + 1) * 1000,
+                    icon: "circle-info",
+                    content: `BetterMint: Auto move in ${secondsTillAutoMove} seconds!`,
+                });
+            }
+
+            setTimeout(() => {
+                this.master.game.controller.move(moveData);
+            }, auto_move_time);
         }
+    }
     SortTopMoves() {
         // sort the top move list to bring the best moves on top (index 0)
         this.topMoves.sort(function (a, b) {
@@ -907,7 +872,7 @@ class BetterMint {
                 window
                     .toaster
                     .add(
-                        {id: "bettermint-settings-updated", duration: 2000, icon: "circle-gearwheel", content: `Settings updated!`}
+                        { id: "bettermint-settings-updated", duration: 2000, icon: "circle-gearwheel", content: `Settings updated!` }
                     );
             }
         }, false);
@@ -917,7 +882,7 @@ class BetterMint {
             window
                 .toaster
                 .add(
-                    {id: "chess.com", duration: 3000, icon: "circle-info", content: `BetterMint is enabled!`}
+                    { id: "chess.com", duration: 3000, icon: "circle-info", content: `BetterMint is enabled!` }
                 );
         }
     }
@@ -946,11 +911,11 @@ var ChromeRequest = (function () { // Options listener and sender
                 id: id
             };
             window.dispatchEvent(
-                new CustomEvent("BetterMintGetOptions", {detail: payload})
+                new CustomEvent("BetterMintGetOptions", { detail: payload })
             );
         });
     }
-    return {getData: getData};
+    return { getData: getData };
 })();
 function InitBetterMint(chessboard) {
     fetch(Config.pathToEcoJson).then(function (response) {
@@ -961,13 +926,13 @@ function InitBetterMint(chessboard) {
     });
     // get the extension options
     ChromeRequest.getData().then(function (options) {
-            try {
-                master = new BetterMint(chessboard, options);
-            } catch (e) {
-                // console.error(e); hehe no error today
-                console.error('oh noes master didnt load')
-            }
-        });
+        try {
+            master = new BetterMint(chessboard, options);
+        } catch (e) {
+            // console.error(e); hehe no error today
+            console.error('oh noes master didnt load')
+        }
+    });
 }
 customElements
     .whenDefined("chess-board")
@@ -988,14 +953,14 @@ window.onload = function () {
                 .game
                 .CreateAnalysisTools(); // create eval stuff because not gay
         }
-        document    
+        document
             .getElementById('board-layout-ad') // remove side bar ad thingie that we don't even need to remove xd
             .remove();
     }
 }
 window.onmessage = function (event) {
     console.log(event.data);
-    if (event.data=='popout') {
+    if (event.data == 'popout') {
         alert('sup')
         let joe = document.createElement('div')
         joe.innerHTML = `
